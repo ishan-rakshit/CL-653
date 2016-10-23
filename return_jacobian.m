@@ -1,4 +1,4 @@
-function Psi_k = return_jacobian(params, x_vector)
+function Psi_k = return_jacobian(params, mats, x_vector)
 %     x1 = x_vector(1);
     x2 = x_vector(2);
     x3 = x_vector(3);

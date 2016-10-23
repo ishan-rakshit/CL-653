@@ -1,7 +1,7 @@
 % TRACKING A BALLISTIC TARGET
 % For EKF implementation --
 
-function x_hat_updated = filter_extended_kalman(params,mats,x)
+function x_hat_updated = filter_extended_kalman(params,mats,x,y)
     x_hat_predicted = zeros(params.dim,params.N);
     x_hat_updated = zeros(params.dim,params.N);
 %     P_hat_predicted = zeros(params.dim,params.dim);
@@ -30,15 +30,15 @@ function x_hat_updated = filter_extended_kalman(params,mats,x)
     
     for k = 2:params.N
         % compute jacobian for this step
-        Psi_k = return_jacobian(params, x_hat_updated(:,k-1));
+        Psi_k = return_jacobian(params, mats, x_hat_updated(:,k-1));
         % prediction step
         x_hat_predicted(:,k-1) = Psi_k*x_hat_updated(:,k-1) + mats.G * [0 -params.g]';
         P_hat_predicted = Psi_k*P_hat_updated*Psi_k' + mats.Q_d;
         % kalman gain computation
-        L_star = P_hat_predicted*C'/(C*P_hat_predicted*C' + R);
+        L_star = P_hat_predicted*mats.C'/(mats.C*P_hat_predicted*mats.C' + mats.R);
         % update step
-        e = y(k) - C*x_hat_predicted;
-        P_hat_updated = (eye(size(L_star*C)) - L_star*C)*P_hat_predicted;
+        e = y(:,k) - mats.C*x_hat_predicted(:,k-1);
+        P_hat_updated = (eye(size(L_star*mats.C)) - L_star*mats.C)*P_hat_predicted;
         x_hat_updated(:,k) = x_hat_predicted(:,k-1) + L_star*e;
     end
 end

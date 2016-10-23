@@ -31,7 +31,7 @@ function [params,mats,x] = true_states
     % defining matrices
     mats.Phi = [1 params.Ts 0 0; 0 1 0 0; 0 0 1 params.Ts; 0 0 0 1];
     mats.G = [params.Ts^2/2 0; params.Ts 0; 0 params.Ts^2/2; 0 params.Ts];
-    
+    mats.C = [1 0 0 0; 0 0 1 0];
     % generating true states from the initial condition given
     for k = 1:params.N-1
         x(:,k+1) = return_psi(x(:,k),mats,params) + mats.G*[0 -params.g]' + w(:,k);
