@@ -1,22 +1,18 @@
-function Psi = return_jacobian(X_star, U_star, D_star, params, means)
-% Input: name of function created above, X?,U ?,D? (Here X?; U?; D? are the values of X, U and D at which the Jacobian matrices have to be evaluated.) 
-% Output: three Jacobian matrices, namely A; B; H. 
-    % initializing Jacobian matrices
-    size_of_vector = 2;
-    A = zeros(size_of_vector,size_of_vector);
-%     B = zeros(size_of_vector,1);
-%     H = zeros(size_of_vector,1);
+function Psi_k = return_jacobian(params, x_vector)
+%     x1 = x_vector(1);
+    x2 = x_vector(2);
+    x3 = x_vector(3);
+    x4 = x_vector(4);
+    [~,c2,rho] = return_rho(x3);
+    F_k(1,1) = 0; 
+    F_k(1,2) = -0.5*(params.g/params.beta)*rho*((2*(x2)^2 + (x4)^2)/(sqrt((x2)^2 + (x4)^2))); 
+    F_k(1,3) = 0.5*(params.g/params.beta)*c2*rho*((x2)*(sqrt((x2)^2 + (x4)^2)));  
+    F_k(1,4) = -0.5*(params.g/params.beta)*rho*((x2*x4)/(sqrt((x2)^2 + (x4)^2))); 
+    F_k(2,1) = 0; 
+    F_k(2,2) = F_k(1,4); 
+    F_k(2,3) = 0.5*(params.g/params.beta)*c2*rho*((x4)*(sqrt((x2)^2 + (x4)^2))); 
+    F_k(2,4) = -0.5*(params.g/params.beta)*rho*(((x2)^2 + 2*(x4)^2)/(sqrt((x2)^2 + (x4)^2))); 
     
-    % perturbation values
-    delta_X = 0.001;
-    delta_X1 = [delta_X; 0];
-    delta_X2 = [0; delta_X];
-    delta_U = 0.001;
-    delta_D = 0.001;
-    
-    % creating matrices
-    A(:,1) = (0.5/delta_X)*(ode_rhs(X_star + delta_X1, U_star, D_star, params, means) - ode_rhs(X_star - delta_X1, U_star, D_star, params, means));
-    A(:,2) = (0.5/delta_X)*(ode_rhs(X_star + delta_X2, U_star, D_star, params, means) - ode_rhs(X_star - delta_X2, U_star, D_star, params, means));
-    B = (0.5/delta_U)*(ode_rhs(X_star, U_star + delta_U, D_star, params, means) - ode_rhs(X_star, U_star - delta_U, D_star, params, means));
-    H = (0.5/delta_D)*(ode_rhs(X_star, U_star, D_star + delta_D, params, means) - ode_rhs(X_star, U_star, D_star - delta_D, params, means));
+    % computing the jacobian Psi_k 
+    Psi_k = mats.Phi + mats.G*F_k;
 end

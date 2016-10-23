@@ -1,17 +1,18 @@
 % TRACKING A BALLISTIC TARGET
-% For KF implementation --
-% find a steady state around which to obtain a linearized single model. 
-% The steady state can be either obtained analytically or by noise-free 
-% simulation of the given model
+% For EKF implementation --
 
 function x_hat_updated = filter_extended_kalman(params,mats,x)
     x_hat_predicted = zeros(params.dim,params.N);
     x_hat_updated = zeros(params.dim,params.N);
-    P_hat_predicted = zeros(params.dim,params.dim);
-    P_hat_updated = zeros(params.dim,params.dim);
+%     P_hat_predicted = zeros(params.dim,params.dim);
+%     P_hat_updated = zeros(params.dim,params.dim);
     
     % Initial conditions for the filter are specified
-    x1 = x(1,1); x2 = x(2,1); x3 = x(3,1); x4 = x(4,1);
+    x1 = x(1,1); 
+%     x2 = x(2,1); 
+    x3 = x(3,1); 
+%     x4 = x(4,1);
+    
 %     x_hat_updated(:,1) = [x2 (x2-x1)/params.Ts y2 (y2-y1)/params.Ts]';
     x_hat_updated(:,1) = [x(1,2) (x(1,2)-x1)/params.Ts x(3,2) (x(3,2)-x3)/params.Ts]';
     % Initial covariance matrix
@@ -28,9 +29,11 @@ function x_hat_updated = filter_extended_kalman(params,mats,x)
         -sigma_dh/params.Ts     2*sigma_dh/params.Ts^2  -sigma_h^2/params.Ts    2*sigma_h^2/params.Ts^2];
     
     for k = 2:params.N
+        % compute jacobian for this step
+        Psi_k = return_jacobian(params, x_hat_updated(:,k-1));
         % prediction step
-        x_hat_predicted(:,k-1) = mats.Phi*x_hat_updated(:,k-1);
-        P_hat_predicted = mats.Phi*P_hat_updated*mats.Phi';
+        x_hat_predicted(:,k-1) = Psi_k*x_hat_updated(:,k-1) + mats.G * [0 -params.g]';
+        P_hat_predicted = Psi_k*P_hat_updated*Psi_k' + mats.Q_d;
         % kalman gain computation
         L_star = P_hat_predicted*C'/(C*P_hat_predicted*C' + R);
         % update step
