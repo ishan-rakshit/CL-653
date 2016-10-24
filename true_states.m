@@ -12,7 +12,7 @@ function [params,mats,x] = true_states
     params.g = 9.81; % m/s^2 - acceleration due to gravity
     params.Ts = 2; % s - sampling interval
     params.q = 1; % m^2/s^3 - process noise intensity
-    params.N = 100; % time steps being considered (NOT SPECIFIED IN PROBLEM)
+    params.N = 60; % time steps being considered (NOT SPECIFIED IN PROBLEM)
     params.dim = 4; % dimension of the state vector
     
     % State vector (x1 x3 - positions in x and y, x2 x4 - velocities in x
