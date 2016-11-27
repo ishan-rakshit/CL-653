@@ -1,10 +1,6 @@
 function [mats,y] = measurement(params,mats,x)
     [~,N] = size(x);
     
-    % measurement noise
-    
-    mats.R = [100^2 0; 0 0.017^2]; % in SI units
-    mats.C = [1 0 0 0; 0 0 1 0];
     v = mvnrnd(zeros(1,2),mats.R,params.N)';
     y = zeros(2,params.N);
    
